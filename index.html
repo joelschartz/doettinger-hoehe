@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Doettinger Hoehe Ausschnitt</title>
+  <style>
+    :root {
+      --tile-width: 123.4879%;
+      --tile-height: 186.0465%;
+      --tile-top: -32.5581%;
+      --tile-left-2: -78.8294%;
+      --tile-left-3: 44.6573%;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #111;
+      color: #f4f4f4;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(96vw, 960px);
+    }
+
+    .crop {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1587.2 / 1100.8;
+      overflow: hidden;
+      background: #222;
+      border: 1px solid #333;
+    }
+
+    .crop img {
+      position: absolute;
+      width: var(--tile-width);
+      height: var(--tile-height);
+      top: var(--tile-top);
+      max-width: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .crop img[data-col="2"] {
+      left: var(--tile-left-2);
+    }
+
+    .crop img[data-col="3"] {
+      left: var(--tile-left-3);
+    }
+
+    .bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      font-size: 14px;
+      color: #cfcfcf;
+    }
+
+    button,
+    a {
+      color: #fff;
+      background: #2d5f3a;
+      border: 0;
+      border-radius: 4px;
+      padding: 8px 10px;
+      font: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    button:hover,
+    a:hover {
+      background: #367448;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    @media (max-width: 560px) {
+      .bar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="crop" aria-label="Ausschnitt Doettinger Hoehe mit Nebenstrasse">
+      <img data-col="2" alt="Live-Ausschnitt Doettinger Hoehe linker Teil">
+      <img data-col="3" alt="Live-Ausschnitt Doettinger Hoehe rechter Teil">
+    </div>
+
+    <div class="bar">
+      <span id="status">Lade aktuellen Ausschnitt...</span>
+      <div class="actions">
+        <button type="button" id="refresh">Aktualisieren</button>
+        <a href="https://panorama.nuerburgring.de/nordschleife-start" target="_blank" rel="noreferrer">Original oeffnen</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const images = [...document.querySelectorAll(".crop img")];
+    const status = document.getElementById("status");
+    const refresh = document.getElementById("refresh");
+    const api = "https://api.panomax.com/1.0/cams/2527/images/day";
+    const camId = 2527;
+
+    function buildTileUrl(day, time, storage, col) {
+      const [year, month, date] = day.split("-");
+      const fileTime = time.replaceAll(":", "-");
+      return `https://panodata${storage}.panomax.com/cams/${camId}/${year}/${month}/${date}/${fileTime}_full_${col}_0.jpg`;
+    }
+
+    async function loadImage() {
+      const now = new Date();
+      status.textContent = "Lade aktuellen HD-Ausschnitt...";
+
+      try {
+        const response = await fetch(`${api}?t=${now.getTime()}`);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const day = await response.json();
+        const latest = [...day.images].reverse().find((item) => item.available);
+
+        if (!latest) {
+          throw new Error("Kein aktuelles Bild gefunden");
+        }
+
+        for (const img of images) {
+          const col = img.dataset.col;
+          img.src = buildTileUrl(day.date, latest.time, day.storage, col);
+        }
+
+        status.textContent = `HD-Ausschnitt: ${latest.time} Uhr`;
+      } catch (error) {
+        status.textContent = "HD-Bild konnte nicht geladen werden.";
+        console.error(error);
+      }
+    }
+
+    images.forEach((image) => {
+      image.addEventListener("error", () => {
+        status.textContent = "Eine HD-Kachel konnte nicht geladen werden.";
+      });
+    });
+
+    refresh.addEventListener("click", loadImage);
+    loadImage();
+    setInterval(loadImage, 60_000);
+  </script>
+</body>
+</html>
