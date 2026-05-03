@@ -6,11 +6,11 @@
   <title>Doettinger Hoehe Ausschnitt</title>
   <style>
     :root {
-      --tile-width: 350%;
-      --tile-height: 168.2827%;
-      --tile-top: -13.1471%;
-      --tile-left-2: -267.8571%;
-      --tile-left-3: 82.1429%;
+      --source-w: 3920;
+      --source-h: 2048;
+      --focus-x: 1780;
+      --focus-y: 650;
+      --stage-height: 170dvh;
     }
 
     * {
@@ -46,20 +46,20 @@
 
     .crop img {
       position: absolute;
-      width: var(--tile-width);
-      height: var(--tile-height);
-      top: var(--tile-top);
+      width: auto;
+      height: var(--stage-height);
+      top: calc(50% - (var(--focus-y) / var(--source-h) * var(--stage-height)));
       max-width: none;
       user-select: none;
       -webkit-user-drag: none;
     }
 
     .crop img[data-col="2"] {
-      left: var(--tile-left-2);
+      left: calc(50% - (var(--focus-x) / var(--source-h) * var(--stage-height)));
     }
 
     .crop img[data-col="3"] {
-      left: var(--tile-left-3);
+      left: calc(50% + ((1960 - var(--focus-x)) / var(--source-h) * var(--stage-height)));
     }
 
     .bar {
