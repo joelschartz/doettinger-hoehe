@@ -8,7 +8,7 @@
     :root {
       --tile-width: 350%;
       --tile-height: 168.2827%;
-      --tile-top: -64.0912%;
+      --tile-top: -13.1471%;
       --tile-left-2: -267.8571%;
       --tile-left-3: 82.1429%;
     }
@@ -38,8 +38,8 @@
 
     .crop {
       position: relative;
-      width: min(100vw, calc(100dvh * 560 / 1217));
-      height: min(100dvh, calc(100vw * 1217 / 560));
+      width: 100vw;
+      height: 100dvh;
       overflow: hidden;
       background: #222;
     }
@@ -63,12 +63,11 @@
     }
 
     .bar {
-      display: none;
+      display: none !important;
       position: fixed;
       left: max(12px, env(safe-area-inset-left));
       right: max(12px, env(safe-area-inset-right));
       bottom: max(12px, env(safe-area-inset-bottom));
-      display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
