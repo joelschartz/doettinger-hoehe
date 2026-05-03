@@ -9,7 +9,7 @@
       --source-w: 3920;
       --source-h: 2048;
       --focus-x: 1780;
-      --focus-y: 650;
+      --focus-y: 920;
       --stage-height: 170dvh;
     }
 
@@ -19,9 +19,9 @@
 
     body {
       margin: 0;
+      width: 100%;
+      height: 100%;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
       background: #111;
       color: #f4f4f4;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -29,15 +29,12 @@
     }
 
     main {
-      position: relative;
-      width: 100vw;
-      height: 100dvh;
-      display: grid;
-      place-items: center;
+      display: contents;
     }
 
     .crop {
-      position: relative;
+      position: fixed;
+      inset: 0;
       width: 100vw;
       height: 100dvh;
       overflow: hidden;
